@@ -1,0 +1,67 @@
+/* BOCADO_Polar · Estilos exclusivos del panel administrativo.
+   Se carga después de style.css y solo agrega lo propio del panel. */
+.sidebar-layout { display: grid; grid-template-columns: 250px 1fr; min-height: calc(100vh - 100px); }
+.sidebar { background: var(--c-sidebar); color: #fff; padding: 20px 16px; }
+.sidebar h2 { font-size: 1rem; letter-spacing: .04em; margin-bottom: 4px; }
+.sidebar .sidebar-user { font-size: .85rem; color: #b7ccd2; margin-bottom: 16px; }
+.sidebar nav { display: grid; gap: 4px; }
+.sidebar a { display: block; padding: 10px 11px; border-radius: 7px; border-left: 4px solid transparent; }
+.sidebar a:hover { background: var(--c-sidebar-hover); }
+.sidebar a[aria-current="page"] { background: var(--c-sidebar-hover); border-left-color: var(--c-accent); font-weight: 800; }
+.content { padding: 28px; min-width: 0; }
+.breadcrumb { display: flex; gap: 8px; flex-wrap: wrap; font-size: .9rem; color: var(--c-muted); margin-bottom: 6px; }
+.breadcrumb a { color: var(--c-primary); text-decoration: underline; }
+.page-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.page-head h1 { margin: 0; }
+.here { display: inline-block; padding: 4px 12px; border-radius: 20px; background: var(--c-accent); color: #222; font-weight: 800; font-size: .85rem; }
+.content section { margin-bottom: 34px; scroll-margin-top: 80px; }
+.kpi { border-top: 4px solid var(--c-primary); }
+.kpi.alert { border-top-color: var(--c-danger); }
+.kpi small { color: var(--c-muted); }
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.toolbar .select, .toolbar .input { width: auto; min-width: 160px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--c-primary); background: var(--c-surface); color: var(--c-primary); border-radius: 20px; padding: 5px 12px; font: inherit; font-size: .85rem; font-weight: 700; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--c-primary); color: var(--c-on-primary); }
+.bars { display: grid; gap: 8px; }
+.bar-row { display: grid; grid-template-columns: 90px 1fr 110px; gap: 10px; align-items: center; font-size: .88rem; }
+.bar-track { background: var(--c-step); border-radius: 6px; height: 14px; overflow: hidden; display: flex; }
+.bar-fill { background: var(--c-primary); height: 100%; }
+.bar-fill.prev { background: var(--c-accent); }
+.legend { display: flex; gap: 14px; font-size: .85rem; color: var(--c-muted); }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.order-detail { padding: 12px 14px; background: var(--c-surface-2); }
+.state-box { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.state-box .select { width: auto; min-width: 140px; padding: 6px 8px; }
+.perm-table td, .perm-table th { text-align: center; }
+.perm-table td:first-child, .perm-table th:first-child { text-align: left; }
+@media (max-width: 850px) {
+  .sidebar-layout { grid-template-columns: 1fr; }
+  .sidebar nav { display: flex; gap: 6px; overflow-x: auto; }
+  .sidebar a { white-space: nowrap; border-left: 0; border-bottom: 3px solid transparent; }
+  .sidebar a[aria-current="page"] { border-bottom-color: var(--c-accent); }
+  .content { padding: 18px; }
+  .bar-row { grid-template-columns: 70px 1fr 90px; }
+}
+
+a.card { display: block; }
+a.card:hover { border-color: var(--c-primary); }
+
+
+/* Agregados versión React */
+.sidebar a[aria-current="page"] {
+  background: var(--c-primary);
+}
+
+.sidebar .muted {
+  color: #b9d3d8;
+  font-size: 0.85rem;
+}
+
+/* Tabla de pedidos: selects legibles y códigos/fechas sin cortes */
+.table-wrap td .select.small { min-width: 150px; }
+.table-wrap td .qty .select.small { min-width: 130px; }
+.table-wrap td .input-group,
+.table-wrap td .qty { flex-wrap: nowrap; }
+.table-wrap td:first-child,
+.table-wrap td .link { white-space: nowrap; }

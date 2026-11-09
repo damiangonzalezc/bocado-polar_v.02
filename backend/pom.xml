@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Proyecto agregador: permite compilar y probar TODOS los microservicios con un solo comando
+  (mvnw clean install). Cada microservicio sigue siendo un proyecto Spring Boot independiente.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cl.bocadopolar</groupId>
+	<artifactId>bocado-polar-backend</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+	<name>BOCADO Polar - Backend (microservicios)</name>
+	<modules>
+		<module>api-gateway</module>
+		<module>ms-auth</module>
+		<module>ms-clientes</module>
+		<module>ms-catalogo</module>
+		<module>ms-inventario</module>
+		<module>ms-pedidos</module>
+		<module>ms-pagos</module>
+		<module>ms-marketing</module>
+		<module>ms-rutas</module>
+		<module>ms-reparto</module>
+		<module>ms-frio</module>
+		<module>ms-config</module>
+		<module>ms-reportes</module>
+		<module>ms-notificaciones</module>
+	</modules>
+</project>
