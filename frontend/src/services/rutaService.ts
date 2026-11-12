@@ -11,6 +11,18 @@ class RutaService {
         return data;
     }
 
+    /**
+     * Rutas futuras del repartidor (desde mañana), para que vea con anticipación los pedidos
+     * que el admin le asignó. La de hoy se sigue pidiendo con rutaDelDia.
+     */
+    static async proximas(repartidorId: number): Promise<Ruta[]> {
+        const { data } = await apiClient.get<Ruta[]>('/rutas', { params: { repartidorId } });
+        const hoy = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD en hora local
+        return data
+            .filter((r) => r.fecha > hoy && (r.estado === 'PLANIFICADA' || r.estado === 'EN_CURSO') && r.paradas.length > 0)
+            .sort((a, b) => a.fecha.localeCompare(b.fecha));
+    }
+
     static async rutaDelDia(repartidorId: number): Promise<Ruta> {
         const { data } = await apiClient.get<Ruta>(`/rutas/repartidor/${repartidorId}/hoy`);
         return data;

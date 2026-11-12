@@ -28,6 +28,9 @@ const Repartidor: React.FC = () => {
     const { mostrar } = useToast();
     const [turno, setTurno] = useState<Turno | null>(null);
     const [ruta, setRuta] = useState<Ruta | null>(null);
+    const [proximas, setProximas] = useState<Ruta[]>([]);
+    // Turno que quedó abierto de un día anterior: no tiene sentido mostrar la cuenta regresiva.
+    const [turnoViejo, setTurnoViejo] = useState(false);
     const [cuenta, setCuenta] = useState<CuentaRegresiva | null>(null);
     const [cierre, setCierre] = useState<CierreCaja | null>(null);
     const [cargando, setCargando] = useState(true);
@@ -39,8 +42,10 @@ const Repartidor: React.FC = () => {
         try {
             const t = await RepartoService.turnoActivo(repartidorId).catch((e) => (estadoHttp(e) === 404 ? null : Promise.reject(e)));
             setTurno(t);
+            setTurnoViejo(!!t && new Date(t.inicio).toDateString() !== new Date().toDateString());
             const r = await RutaService.rutaDelDia(repartidorId).catch((e) => (estadoHttp(e) === 404 ? null : Promise.reject(e)));
             setRuta(r);
+            setProximas(await RutaService.proximas(repartidorId).catch(() => []));
             setCuenta(t ? await FrioService.cuentaRegresiva(t.id).catch(() => null) : null);
             setError('');
         } catch (e) {
@@ -68,6 +73,7 @@ const Repartidor: React.FC = () => {
     if (cargando) return <Shell onSalir={logout}><Loader texto="Cargando tu ruta…" /></Shell>;
 
     const paradas = ruta?.paradas ?? [];
+
     const cuantas = (estado: Parada['estado']) => paradas.filter((p) => p.estado === estado).length;
 
     return (
@@ -85,7 +91,12 @@ const Repartidor: React.FC = () => {
                         {ruta ? `Ruta ${ruta.codigo} · ${ruta.vehiculo?.tipo ?? 'Vehículo refrigerado'} ${ruta.vehiculo?.patente ?? ''}` : 'Sin ruta asignada hoy'}
                         {' · '}caja a {turno.tempCajaInicial}°C{turno.alertaTemperatura && ' (sobre el umbral RN-01: revisa la caja)'}
                     </p>
-                    {cuenta && (
+                    {turnoViejo && (
+                        <p className="notice warning" role="status">
+                            Tienes un turno abierto desde el {FormatService.fechaHora(turno.inicio)}. Ciérralo con «Cerrar turno y rendir caja» y luego inicia el de hoy.
+                        </p>
+                    )}
+                    {cuenta && !turnoViejo && (
                         <p className={`notice ${cuenta.excedida ? 'error' : cuenta.debeAvisar ? 'warning' : 'success'}`} role="status">
                             {cuenta.excedida
                                 ? `Se superaron los ${cuenta.limiteMin} min de ruta: riesgo para la cadena de frío.`
@@ -133,6 +144,33 @@ const Repartidor: React.FC = () => {
                     </article>
                 ))}
             </section>
+
+            {proximas.length > 0 && (
+                <section aria-labelledby="proximas-titulo">
+                    <h2 id="proximas-titulo">Próximas entregas</h2>
+                    <p className="muted">Pedidos que el administrador ya te asignó. Podrás registrarlos el día de la entrega.</p>
+                    {proximas.map((r) => (
+                        <div key={r.id} className="card">
+                            <h3>{FormatService.fecha(r.fecha)} · Ruta {r.codigo}</h3>
+                            <p className="muted">
+                                Salida {r.horaSalida?.slice(0, 5)} · {r.vehiculo ? `${r.vehiculo.tipo} ${r.vehiculo.patente}` : 'vehículo por asignar'} · {r.paradas.length} parada{r.paradas.length === 1 ? '' : 's'}
+                            </p>
+                            {r.paradas.map((p) => (
+                                <article key={p.id} className="route-item">
+                                    <h3>{p.orden}. {p.codigoPedido ?? `Pedido ${p.pedidoId}`}</h3>
+                                    <p>
+                                        {p.cliente && <><strong>{p.cliente}</strong><br /></>}
+                                        {p.direccion}, {p.comuna}
+                                        <br />
+                                        <small className="muted">{p.horario} {p.referencia && `· ${p.referencia}`}</small>
+                                    </p>
+                                    {p.cobrarAlEntregar && <p className="tag warning">Cobrar {FormatService.dinero(p.montoACobrar)}</p>}
+                                </article>
+                            ))}
+                        </div>
+                    ))}
+                </section>
+            )}
 
             {turno && <CerrarTurno turno={turno} onCerrado={(c) => { setCierre(c); setTurno(null); void cargar(); }} />}
             <Link className="btn secondary driver-btn" to="/">Volver al portal</Link>
